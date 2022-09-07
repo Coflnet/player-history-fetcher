@@ -22,6 +22,8 @@ func StartCoflFetch() {
 			if err != nil {
 				log.Error().Err(err).Msgf("can not queue player: %v", player)
 			}
+
+			time.Sleep(time.Millisecond * 200)
 		}
 
 		start += 1000
@@ -30,6 +32,5 @@ func StartCoflFetch() {
 			return
 		}
 
-		time.Sleep(time.Millisecond * 200)
 	}
 }
