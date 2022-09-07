@@ -14,8 +14,8 @@ func PlayersFromDb(startId, endId int) (<-chan CoflPlayer, error) {
 	}
 
 	channel := make(chan CoflPlayer, 100)
-	defer close(channel)
 	go func() {
+		defer close(channel)
 		for rows.Next() {
 			var uuid []byte
 			err := rows.Scan(&uuid)
