@@ -3,6 +3,8 @@ package usecase
 import (
 	"github.com/Coflnet/player-name-fetcher/internal/mongo"
 	"github.com/rs/zerolog/log"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -21,8 +23,8 @@ func StartTemFetch() {
 			log.Error().Err(err).Msgf("can not process player, %v", player)
 		}
 
-		time.Sleep(time.Millisecond * 200)
-
+		slowDown, _ := strconv.Atoi(os.Getenv("SLOW_DOWN_MS"))
+		time.Sleep(time.Millisecond * time.Duration(slowDown))
 	}
 }
 

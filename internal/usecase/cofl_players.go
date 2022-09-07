@@ -3,6 +3,8 @@ package usecase
 import (
 	"github.com/Coflnet/player-name-fetcher/internal/db"
 	"github.com/rs/zerolog/log"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -23,7 +25,8 @@ func StartCoflFetch() {
 				log.Error().Err(err).Msgf("can not queue player: %v", player)
 			}
 
-			time.Sleep(time.Millisecond * 200)
+			slowDown, _ := strconv.Atoi(os.Getenv("SLOW_DOWN_MS"))
+			time.Sleep(time.Millisecond * time.Duration(slowDown))
 		}
 
 		start += 1000
