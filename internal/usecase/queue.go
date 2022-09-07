@@ -40,6 +40,7 @@ func queueCanBeSkipped(player *mongo.Player) bool {
 		return false
 	}
 
+	log.Info().Msgf("check if %s is after %s: %t", player.LastQueue, startTime, player.LastQueue.After(startTime))
 	if player.LastQueue.After(startTime) {
 		log.Warn().Msgf("player %s was already queued at %s", player.UUID, player.LastQueue)
 		return true
