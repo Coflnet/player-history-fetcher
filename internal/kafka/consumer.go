@@ -7,7 +7,8 @@ import (
 )
 
 func ReadPlayerPayload() (kafka.Message, error) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*50)
+	defer cancel()
 
 	return playerReader.FetchMessage(ctx)
 }
