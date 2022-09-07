@@ -7,20 +7,23 @@ import (
 	"time"
 )
 
-func WritePlayerPayload(payload PlayerKafkaPayload) error {
-	serialized, err := json.Marshal(payload)
-
-	if err != nil {
-		return err
-	}
+func WritePlayerPayloads(payload []PlayerKafkaPayload) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = playerWriter.WriteMessages(ctx, kafka.Message{
-		Key:   []byte(payload.UUID),
-		Value: serialized,
-	})
+	messages := []kafka.Message{}
+	for _, p := range payload {
+		serialized, err := json.Marshal(p)
+		if err != nil {
+			return err
+		}
+		messages = append(messages, kafka.Message{
+			Key:   []byte(p.UUID),
+			Value: serialized,
+		})
+	}
 
+	err := playerWriter.WriteMessages(ctx, messages...)
 	return err
 }

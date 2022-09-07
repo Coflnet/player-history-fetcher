@@ -19,12 +19,16 @@ func StartCoflFetch() {
 			log.Error().Err(err).Msgf("can not get players from db")
 		}
 
+		batch := make([]db.CoflPlayer, 0)
 		for player := range players {
-			err := QueuePlayer(player.MinecraftUuid)
-			if err != nil {
-				log.Error().Err(err).Msgf("can not queue player: %v", player)
+			batch = append(batch, player)
+
+			if len(batch) < 100 {
+				continue
 			}
 
+			QueuePlayers(batch)
+			batch = make([]db.CoflPlayer, 0)
 			slowDown, _ := strconv.Atoi(os.Getenv("SLOW_DOWN_MS"))
 			time.Sleep(time.Millisecond * time.Duration(slowDown))
 		}
