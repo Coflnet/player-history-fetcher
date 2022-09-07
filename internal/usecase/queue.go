@@ -16,6 +16,7 @@ func QueuePlayer(uuid string) error {
 	}
 
 	if queueCanBeSkipped(existingPlayer) {
+		log.Warn().Msgf("skipping player %s", uuid)
 		return nil
 	}
 

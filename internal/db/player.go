@@ -15,21 +15,23 @@ func PlayersFromDb(startId, endId int) (<-chan CoflPlayer, error) {
 
 	channel := make(chan CoflPlayer, 100)
 	defer close(channel)
-	for rows.Next() {
-		var uuid []byte
-		err := rows.Scan(&uuid)
-		if err != nil {
-			return nil, err
-		}
+	go func() {
+		for rows.Next() {
+			var uuid []byte
+			err := rows.Scan(&uuid)
+			if err != nil {
+				continue
+			}
 
-		if len(uuid) == 0 {
-			continue
-		}
+			if len(uuid) == 0 {
+				continue
+			}
 
-		player := CoflPlayer{
-			MinecraftUuid: string(uuid),
+			player := CoflPlayer{
+				MinecraftUuid: string(uuid),
+			}
+			channel <- player
 		}
-		channel <- player
-	}
+	}()
 	return channel, nil
 }
