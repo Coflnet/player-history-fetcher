@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/Coflnet/player-name-fetcher/internal/db"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 var start = 0
@@ -25,8 +26,10 @@ func StartCoflFetch() {
 
 		start += 1000
 
-		if start > 50_000 {
+		if start > 20_000 {
 			return
 		}
+
+		time.Sleep(time.Millisecond * 200)
 	}
 }

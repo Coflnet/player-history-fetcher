@@ -19,6 +19,7 @@ func QueuePlayer(uuid string) error {
 		return nil
 	}
 
+	log.Info().Msgf("queueing player %s", uuid)
 	err = mongo.InsertEmptyPlayer(&mongo.Player{
 		UUID:      uuid,
 		LastQueue: time.Now(),

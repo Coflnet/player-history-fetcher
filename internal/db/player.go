@@ -1,7 +1,5 @@
 package db
 
-import "github.com/rs/zerolog/log"
-
 type CoflPlayer struct {
 	MinecraftUuid string
 }
@@ -24,8 +22,6 @@ func PlayersFromDb(startId, endId int) (<-chan CoflPlayer, error) {
 		if len(uuid) == 0 {
 			continue
 		}
-
-		log.Info().Msgf("uuid: %v", uuid)
 
 		player := CoflPlayer{
 			MinecraftUuid: string(uuid),

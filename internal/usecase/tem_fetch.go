@@ -21,7 +21,7 @@ func StartTemFetch() {
 			log.Error().Err(err).Msgf("can not process player, %v", player)
 		}
 
-		time.Sleep(time.Millisecond * 10)
+		time.Sleep(time.Millisecond * 200)
 
 	}
 }
