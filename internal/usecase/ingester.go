@@ -10,6 +10,7 @@ import (
 
 func StartIngester() error {
 	for {
+		startTime := time.Now()
 		msg, err := kafka.ReadPlayerPayload()
 		if err != nil {
 			log.Error().Err(err).Msgf("can not read player payload")
@@ -27,7 +28,12 @@ func StartIngester() error {
 			log.Error().Err(err).Msgf("can not commit message")
 		}
 
-		time.Sleep(1 * time.Second)
+		endTime := time.Now()
+		diff := endTime.Sub(startTime)
+
+		log.Info().Msgf("waiting %v", time.Second-diff)
+
+		time.Sleep((1 * time.Second) - diff)
 	}
 }
 
