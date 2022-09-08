@@ -27,6 +27,6 @@ func main() {
 		log.Panic().Err(err).Msgf("can not connect to db")
 	}
 
-	usecase.StartCoflFetch()
+	// usecase.StartCoflFetch()
 	usecase.StartTemFetch()
 }
