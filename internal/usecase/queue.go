@@ -5,6 +5,7 @@ import (
 	"github.com/Coflnet/player-name-fetcher/internal/kafka"
 	"github.com/Coflnet/player-name-fetcher/internal/mongo"
 	"github.com/rs/zerolog/log"
+	"sync"
 	"time"
 )
 
@@ -14,15 +15,21 @@ func QueuePlayers(players []db.CoflPlayer) int {
 	playersToQueue := make(chan db.CoflPlayer, len(players))
 	sum := 0
 
-	for _, player := range players {
-		go func(p db.CoflPlayer) {
-			defer close(playersToQueue)
-			if queueCanBeSkipped(p.MinecraftUuid) {
-				return
-			}
-			playersToQueue <- p
-		}(player)
-	}
+	go func() {
+		defer close(playersToQueue)
+		wg := sync.WaitGroup{}
+		for _, player := range players {
+			wg.Add(1)
+			go func(p db.CoflPlayer) {
+				defer wg.Done()
+				if queueCanBeSkipped(p.MinecraftUuid) {
+					return
+				}
+				playersToQueue <- p
+			}(player)
+		}
+		wg.Wait()
+	}()
 
 	payloads := make([]kafka.PlayerKafkaPayload, 0)
 	for player := range playersToQueue {
