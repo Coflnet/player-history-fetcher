@@ -10,8 +10,9 @@ import (
 
 var startTime = time.Now()
 
-func QueuePlayers(players []db.CoflPlayer) {
+func QueuePlayers(players []db.CoflPlayer) int {
 	playersToQueue := make([]db.CoflPlayer, 0)
+	sum := 0
 
 	for _, player := range players {
 		if queueCanBeSkipped(player.MinecraftUuid) {
@@ -23,7 +24,6 @@ func QueuePlayers(players []db.CoflPlayer) {
 
 	payloads := make([]kafka.PlayerKafkaPayload, 0)
 	for _, player := range playersToQueue {
-		log.Info().Msgf("queueing player %s", player.MinecraftUuid)
 		err := mongo.InsertEmptyPlayer(&mongo.Player{
 			UUID:      player.MinecraftUuid,
 			LastQueue: time.Now(),
@@ -36,9 +36,16 @@ func QueuePlayers(players []db.CoflPlayer) {
 		payloads = append(payloads, kafka.PlayerKafkaPayload{
 			UUID: player.MinecraftUuid,
 		})
+
+		sum++
 	}
 
-	kafka.WritePlayerPayloads(payloads)
+	err := kafka.WritePlayerPayloads(payloads)
+	if err != nil {
+		log.Error().Err(err).Msgf("can not write player payloads")
+		return sum
+	}
+	return sum
 }
 
 func queueCanBeSkipped(uuid string) bool {
@@ -55,7 +62,6 @@ func queueCanBeSkipped(uuid string) bool {
 	oneYearAgo := time.Now().AddDate(-1, 0, 0)
 
 	if existingPlayer.LastQueue.After(oneYearAgo) {
-		log.Warn().Msgf("player %s was already queued at %s", existingPlayer.UUID, existingPlayer.LastQueue)
 		return true
 	}
 

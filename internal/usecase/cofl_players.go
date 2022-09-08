@@ -14,7 +14,7 @@ func StartCoflFetch() {
 
 	for {
 
-		players, err := db.PlayersFromDb(start, start+1000)
+		players, err := db.PlayersFromDb(start, start+2000)
 		if err != nil {
 			log.Error().Err(err).Msgf("can not get players from db")
 		}
@@ -23,11 +23,15 @@ func StartCoflFetch() {
 		for player := range players {
 			batch = append(batch, player)
 
-			if len(batch) < 100 {
+			if len(batch) < 1000 {
 				continue
 			}
 
-			QueuePlayers(batch)
+			playersQueued := QueuePlayers(batch)
+
+			log.Info().Msgf("queued %d players", playersQueued)
+			log.Info().Msgf("%d players skipped", len(batch)-playersQueued)
+
 			batch = make([]db.CoflPlayer, 0)
 			slowDown, _ := strconv.Atoi(os.Getenv("SLOW_DOWN_MS"))
 			time.Sleep(time.Millisecond * time.Duration(slowDown))
