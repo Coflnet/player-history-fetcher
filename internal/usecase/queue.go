@@ -11,19 +11,21 @@ import (
 var startTime = time.Now()
 
 func QueuePlayers(players []db.CoflPlayer) int {
-	playersToQueue := make([]db.CoflPlayer, 0)
+	playersToQueue := make(chan db.CoflPlayer)
 	sum := 0
 
 	for _, player := range players {
-		if queueCanBeSkipped(player.MinecraftUuid) {
-			continue
-		}
-
-		playersToQueue = append(playersToQueue, player)
+		go func(p db.CoflPlayer) {
+			defer close(playersToQueue)
+			if queueCanBeSkipped(p.MinecraftUuid) {
+				return
+			}
+			playersToQueue <- p
+		}(player)
 	}
 
 	payloads := make([]kafka.PlayerKafkaPayload, 0)
-	for _, player := range playersToQueue {
+	for player := range playersToQueue {
 		err := mongo.InsertEmptyPlayer(&mongo.Player{
 			UUID:      player.MinecraftUuid,
 			LastQueue: time.Now(),
