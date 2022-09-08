@@ -33,7 +33,7 @@ func StartIngester() error {
 
 		log.Info().Msgf("waiting %v", time.Second-diff)
 
-		time.Sleep((1 * time.Second) - diff)
+		time.Sleep((1500 * time.Millisecond) - diff)
 	}
 }
 
