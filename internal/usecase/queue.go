@@ -11,7 +11,7 @@ import (
 var startTime = time.Now()
 
 func QueuePlayers(players []db.CoflPlayer) int {
-	playersToQueue := make(chan db.CoflPlayer)
+	playersToQueue := make(chan db.CoflPlayer, len(players))
 	sum := 0
 
 	for _, player := range players {
