@@ -8,7 +8,7 @@ type CoflPlayer struct {
 
 func PlayersFromDb(startId, endId int) (<-chan CoflPlayer, error) {
 	log.Info().Msgf("getting players from db, from %v to %v", startId, endId)
-	rows, err := db.Query("SELECT AccountUuid FROM McIds WHERE Id >= ? AND Id <= ?", startId, endId)
+	rows, err := db.Query("SELECT value FROM UuId WHERE Id >= ? AND Id <= ?", startId, endId)
 	if err != nil {
 		return nil, err
 	}

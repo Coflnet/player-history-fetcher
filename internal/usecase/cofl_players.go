@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var start = 0
+var start = 367_512_453
 
 func StartCoflFetch() {
 
@@ -35,7 +35,7 @@ func StartCoflFetch() {
 
 		start += 1000
 
-		if start > 20_000 {
+		if start > 440_252_059 {
 			return
 		}
 
