@@ -12,9 +12,10 @@ var start = 367_512_453
 
 func StartCoflFetch() {
 
+	batchSize := 10_000
 	for {
 
-		players, err := db.PlayersFromDb(start, start+2000)
+		players, err := db.PlayersFromDb(start, start+batchSize)
 		if err != nil {
 			log.Error().Err(err).Msgf("can not get players from db")
 		}
@@ -32,6 +33,6 @@ func StartCoflFetch() {
 		if start > 440_252_059 {
 			return
 		}
-		start += 1000
+		start += batchSize
 	}
 }
