@@ -38,5 +38,11 @@ func processPayloadMessage(msg kafkago.Message) error {
 		return err
 	}
 
-	return FetchUUID(player.UUID)
+	err = FetchUUID(player.UUID)
+
+	// if an error occurred wait a couple of minutes
+	if err != nil {
+		time.Sleep(time.Minute * 5)
+	}
+	return err
 }
