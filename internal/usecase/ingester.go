@@ -10,16 +10,20 @@ import (
 
 func StartIngester() error {
 	for {
-		time.Sleep(900 * time.Millisecond)
+		start := time.Now()
 		msg, err := kafka.ReadPlayerPayload()
 		if err != nil {
 			log.Error().Err(err).Msgf("can not read player payload")
+
+			sleep(start)
 			continue
 		}
 
 		err = processPayloadMessage(msg)
 		if err != nil {
 			log.Error().Err(err).Msgf("can not process player payload")
+
+			sleep(start)
 			continue
 		}
 
@@ -27,6 +31,8 @@ func StartIngester() error {
 		if err != nil {
 			log.Error().Err(err).Msgf("can not commit message")
 		}
+
+		sleep(start)
 
 	}
 }
@@ -45,4 +51,9 @@ func processPayloadMessage(msg kafkago.Message) error {
 		time.Sleep(time.Minute * 5)
 	}
 	return err
+}
+
+func sleep(start time.Time) {
+	elapsed := time.Since(start)
+	time.Sleep(time.Second - elapsed)
 }
